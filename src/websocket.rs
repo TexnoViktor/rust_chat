@@ -1,12 +1,12 @@
 use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
 use rocket::State;
-use rocket::http::Status;
 use rocket::serde::json::Json;
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::Sender;
 use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
+use rocket::http::Status;
 use serde_json::json;
 use crate::AppState;
 use crate::models::Message;
@@ -37,13 +37,9 @@ impl WebSocketState {
         rx
     }
 
-    pub fn remove_connection(&self, user_id: i32) {
-        self.connections.lock().unwrap().remove(&user_id);
-    }
-
-    pub fn send_message(&self, msg: WebSocketMessage) {
-        if let Some(tx) = self.connections.lock().unwrap().get(&msg.to_user_id) {
-            let _ = tx.send(msg);
+    pub fn send_message(&self, message: WebSocketMessage) {
+        if let Some(tx) = self.connections.lock().unwrap().get(&message.to_user_id) {
+            let _ = tx.send(message);
         }
     }
 }

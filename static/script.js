@@ -57,7 +57,7 @@ async function handleLogin(e) {
             currentUsername = data.user.username;
             showChatPage();
             connectWebSocket();
-            loadChats();
+            await loadChats();
             await loadLastChat();
         } else {
             alert(data.message);
@@ -107,6 +107,31 @@ async function handleRegister(e) {
 // Chat functions
 function connectWebSocket() {
     ws = new WebSocket(`ws://${window.location.hostname}:8000/ws/${currentUserId}`);
+
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+
+        // Display message if in current chat
+        if (message.from_user_id === currentChatUserId || message.to_user_id === currentChatUserId) {
+            displayMessage(message);
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Update chat list to show most recent chat at top
+        updateChatList(message);
+    };
+
+    function updateChatList(message) {
+        const otherUserId = message.from_user_id === currentUserId ? message.to_user_id : message.from_user_id;
+        const chatList = document.getElementById('chat-list');
+        const existingChat = Array.from(chatList.children).find(chat => chat.dataset.userId === otherUserId.toString());
+
+        if (existingChat) {
+            chatList.removeChild(existingChat);
+            chatList.insertBefore(existingChat, chatList.firstChild);
+        }
+    }
 
     ws.onopen = () => console.log('WebSocket connected');
     ws.onerror = (error) => console.error('WebSocket error:', error);
@@ -249,18 +274,12 @@ async function sendMessage(message) {
         const response = await fetch('/message', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                from_user_id: currentUserId,
-                to_user_id: message.to_user_id,
-                content: message.content,
-                message_type: message.message_type,
-                file_path: message.file_path || null
-            }),
+            body: JSON.stringify(message),
         });
 
         const data = await response.json();
-        if (data.status !== 'success') {
-            console.error('Failed to send message:', data.message);
+        if (data.status === 'success') {
+            ws.send(JSON.stringify(message));
         }
     } catch (error) {
         console.error('Failed to send message:', error);
