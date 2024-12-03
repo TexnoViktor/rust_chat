@@ -5,6 +5,35 @@ let ws = null;
 let chatModal = null;
 let mediaRecorder = null;
 let recordedChunks = [];
+let chatRefreshInterval;
+
+
+
+// Add new refresh functions
+function startChatRefresh() {
+    // Initial load
+    refreshCurrentChat();
+    // Start interval
+    chatRefreshInterval = setInterval(refreshCurrentChat, 100);
+}
+
+async function refreshCurrentChat() {
+    if (currentChatUserId) {
+        try {
+            const response = await fetch(`/messages/${currentChatUserId}`);
+            const data = await response.json();
+            if (data.status === 'success') {
+                const messagesContainer = document.getElementById('messages');
+                messagesContainer.innerHTML = '';
+                data.messages.forEach(message => displayMessage(message));
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        } catch (error) {
+            console.error('Failed to refresh messages:', error);
+        }
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     chatModal = new bootstrap.Modal(document.getElementById('newChatModal'));
@@ -57,7 +86,7 @@ async function handleLogin(e) {
             currentUsername = data.user.username;
             showChatPage();
             connectWebSocket();
-            await loadChats();
+            loadChats();
             await loadLastChat();
         } else {
             alert(data.message);
@@ -466,10 +495,12 @@ function showRegisterPage() {
     document.getElementById('register-page').style.display = 'flex';
 }
 
-function showChatPage() {
+// Update showChatPage function
+async function showChatPage() {
     document.getElementById('login-page').style.display = 'none';
     document.getElementById('register-page').style.display = 'none';
     document.getElementById('chat-page').style.display = 'block';
+    startChatRefresh();
 }
 
 // Event handlers
