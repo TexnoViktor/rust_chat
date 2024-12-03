@@ -1,0 +1,98 @@
+.chat-container {
+    height: calc(100vh - 120px);
+}
+
+.messages-container {
+    height: calc(100vh - 250px);
+    overflow-y: auto;
+}
+
+.chat-list {
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.message {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.message-sent {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+}
+
+.message-received {
+    background-color: #e9ecef;
+    margin-right: auto;
+}
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+}
+
+.chat-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.chat-item:hover {
+    background-color: #f8f9fa;
+}
+
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-search {
+    margin-bottom: 15px;
+    padding: 8px;
+    border-radius: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.new-chat-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recording .btn-record {
+    background-color: #dc3545;
+    color: white;
+}
+
+.message-input-container {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.message {
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.message-time {
+    position: absolute;
+    bottom: 2px;
+    right: 5px;
+    font-size: 0.75rem;
+}
